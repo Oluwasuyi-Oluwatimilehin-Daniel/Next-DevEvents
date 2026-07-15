@@ -35,5 +35,41 @@ export const events: Event[] = [
     date: "June 15, 2026",
     time: "09:30 AM CET",
     description: "A two-day conference focusing exclusively on JavaScript development, its ecosystem, and future trends."
+  },
+  {
+    title: "GitHub Universe 2026",
+    image: "/images/github_universe.png",
+    slug: "github-universe-2026",
+    location: "San Francisco, CA & Online",
+    date: "November 10, 2026",
+    time: "09:00 AM PST",
+    description: "The global developer event of the year. Join us for keynote announcements, hands-on workshops, and community networking."
+  },
+  {
+    title: "KubeCon 2026",
+    image: "/images/kubecon.png",
+    slug: "kubecon-2026",
+    location: "Chicago, IL",
+    date: "November 17, 2026",
+    time: "08:30 AM CST",
+    description: "The Cloud Native Computing Foundation's flagship conference gathering adopters and technologists from leading open source communities."
+  },
+  {
+    title: "Google I/O 2026",
+    image: "/images/google_io.png",
+    slug: "google-io-2026",
+    location: "Mountain View, CA & Online",
+    date: "May 12, 2026",
+    time: "10:00 AM PST",
+    description: "Join us for Google's annual developer festival to learn about the latest product updates, developer tools, and technology platforms."
+  },
+  {
+    title: "Svelte Summit 2026",
+    image: "/images/svelte_summit.png",
+    slug: "svelte-summit-2026",
+    location: "Stockholm, Sweden & Online",
+    date: "September 5, 2026",
+    time: "09:00 AM CET",
+    description: "A dedicated conference featuring the creators and community leaders of Svelte, showing off the future of compiler-driven frontend web applications."
   }
 ];

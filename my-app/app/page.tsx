@@ -1,14 +1,24 @@
+"use client";
+
+import { useEffect } from "react";
+import posthog from "posthog-js";
 import EventCard from "@/components/EventCard";
 import ExploreBtn from "@/components/ExploreBtn";
 import { events } from "@/lib/constants";
 
-const page = () => {
+const Page = () => {
+  useEffect(() => {
+    posthog.capture("featured_events_viewed", {
+      event_count: events.length,
+      section: "featured_events",
+    });
+  }, []);
   return (
     <section className="flex flex-col px-4 py-12">
       <h1 className="text-center text-3xl font-medium">
         {" "}
         The Hub for Every Dev <br />{" "}
-        <span className="text-shadow-zinc-500/15">Event You Can't Miss</span>
+        <span className="text-shadow-zinc-500/15">Event You Can&apos;t Miss</span>
       </h1>
       <p className="text-center mt-1">
         Hackatons, Meetups, and Conferences, All In One Place
@@ -29,4 +39,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

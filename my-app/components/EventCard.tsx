@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import posthog from "posthog-js";
 import type { Event } from "@/lib/constants";
 
 interface Props {
@@ -7,13 +10,23 @@ interface Props {
 }
 
 const EventCard = ({ event }: Props) => {
+  const handleClick = () => {
+    posthog.capture("event_card_clicked", {
+      event_slug: event.slug,
+      event_title: event.title,
+      event_location: event.location,
+      event_date: event.date,
+    });
+  };
+
   return (
     <Link
       className="group block relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/40 backdrop-blur-md p-4 transition-all duration-300 hover:border-emerald-500/30 hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-emerald-500/5"
       href={`/event/${event.slug}`}
+      onClick={handleClick}
     >
       {/* Event Image Container */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-zinc-800">
+      <div className={`relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-zinc-800`}>
         <Image
           src={event.image}
           alt={event.title}
