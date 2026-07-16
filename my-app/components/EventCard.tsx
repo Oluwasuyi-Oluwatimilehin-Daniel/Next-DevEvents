@@ -26,7 +26,7 @@ const EventCard = ({ event }: Props) => {
       onClick={handleClick}
     >
       {/* Event Image Container */}
-      <div className={`relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-zinc-800`}>
+      <div className="relative aspect-16/10 w-full overflow-hidden rounded-xl bg-zinc-800">
         <Image
           src={event.image}
           alt={event.title}
