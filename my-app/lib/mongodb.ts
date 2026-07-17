@@ -24,7 +24,7 @@ declare global {
 }
 
 // Access the global variable to check for existing connection caching
-let cached: MongooseCached = global.mongoose || { conn: null, promise: null };
+const cached: MongooseCached = global.mongoose || { conn: null, promise: null };
 
 // If there's no cached object on global, assign it
 if (!global.mongoose) {

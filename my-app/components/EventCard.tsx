@@ -22,7 +22,7 @@ const EventCard = ({ event }: Props) => {
   return (
     <Link
       className="group block relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/40 backdrop-blur-md p-4 transition-all duration-300 hover:border-emerald-500/30 hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-emerald-500/5"
-      href={`/event/${event.slug}`}
+      href={`/events/${event.slug}`}
       onClick={handleClick}
     >
       {/* Event Image Container */}

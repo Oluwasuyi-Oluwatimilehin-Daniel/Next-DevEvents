@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable */
 const cloudinary = require('cloudinary').v2;
 
 // 1. Configure Cloudinary inline
