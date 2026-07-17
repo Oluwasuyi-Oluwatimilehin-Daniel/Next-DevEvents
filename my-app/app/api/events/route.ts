@@ -95,11 +95,22 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (e) {
-    console.error(e);
+    console.error("API error:", e);
+    
+    // Safely extract the error message
+    let errorMessage = "Unknown error";
+    if (e instanceof Error) {
+      errorMessage = e.message;
+    } else if (e && typeof e === "object") {
+      errorMessage = (e as any).message || JSON.stringify(e);
+    } else if (e) {
+      errorMessage = String(e);
+    }
+
     return NextResponse.json(
       {
         message: "Event creation failed",
-        error: e instanceof Error ? e.message : "Unknown error",
+        error: errorMessage,
       },
       { status: 500 },
     );

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  cacheComponents: true,
   // Enable image optimization and specify allowed domains
   images: {
     remotePatterns: [
