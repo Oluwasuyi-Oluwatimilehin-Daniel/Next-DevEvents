@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <header className="border-b border-zinc-950/30 sticky top-0 z-50 bg-zinc-950/30 backdrop-blur-lg">
-      <nav className="flex items-center justify-between py-3 px-4">
+      <nav className="container max-w-7xl mx-auto flex items-center justify-between py-3 px-4">
         <Link className="text-xl font-medium tracking-tighter" href="/" onClick={() => handleNavClick("logo", "/")}>
           Logo
         </Link>
