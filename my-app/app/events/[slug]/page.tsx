@@ -32,7 +32,9 @@ const EventDetailItem = ({
       <Icon className="w-5 h-5" />
     </div>
     <div>
-      <p className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">{label}</p>
+      <p className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+        {label}
+      </p>
       <p className="text-sm font-medium text-zinc-200">{value}</p>
     </div>
   </div>
@@ -48,7 +50,7 @@ const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => (
       {agendaItems.map((item, index) => (
         <div key={item} className="relative">
           {/* Timeline Dot with number */}
-          <span className="absolute -left-[32px] top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-950 border border-emerald-500/60 text-[10px] text-emerald-400 font-mono font-bold">
+          <span className="absolute left-[-32px] top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-950 border border-emerald-500/60 text-[10px] text-emerald-400 font-mono font-bold">
             {index + 1}
           </span>
           <p className="text-sm font-medium text-zinc-200">{item}</p>
@@ -79,7 +81,10 @@ const EventDetailsPage = async ({
   const { slug } = await params;
 
   const request = await fetch(`${BASE_URL}/api/events/${slug}`);
-  const { event, bookingsCount = 0 }: { event: IEvent; bookingsCount?: number } = await request.json();
+  const {
+    event,
+    bookingsCount = 0,
+  }: { event: IEvent; bookingsCount?: number } = await request.json();
 
   if (!event) return notFound();
 
@@ -139,11 +144,7 @@ const EventDetailsPage = async ({
                 label="Date"
                 value={formatDate(event.date)}
               />
-              <EventDetailItem
-                Icon={Clock}
-                label="Time"
-                value={event.time}
-              />
+              <EventDetailItem Icon={Clock} label="Time" value={event.time} />
               <EventDetailItem
                 Icon={MapPin}
                 label="Location"
@@ -175,7 +176,9 @@ const EventDetailsPage = async ({
                 {event.organizer.substring(0, 2)}
               </div>
               <div>
-                <h4 className="text-sm font-bold text-zinc-200">{event.organizer}</h4>
+                <h4 className="text-sm font-bold text-zinc-200">
+                  {event.organizer}
+                </h4>
                 <p className="text-xs text-zinc-500">Verified Host</p>
               </div>
             </div>
