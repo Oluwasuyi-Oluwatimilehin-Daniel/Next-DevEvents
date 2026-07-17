@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/mongodb";
 import Event from "@/database/event.model";
+import Bookings from "@/database/booking.model";
 import { NextRequest, NextResponse } from "next/server";
 
 // Define context type containing dynamic params as a Promise for Next.js 16 compatibility
@@ -40,11 +41,15 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
       );
     }
 
-    // Return the fetched event
+    // Query bookings count for this event
+    const bookingsCount = await Bookings.countDocuments({ eventId: event._id });
+
+    // Return the fetched event and bookings count
     return NextResponse.json(
       {
         message: "Event details fetched successfully.",
         event,
+        bookingsCount,
       },
       { status: 200 },
     );

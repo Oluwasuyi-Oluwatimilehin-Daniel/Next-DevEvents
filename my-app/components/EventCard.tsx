@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
 import type { Event } from "@/lib/constants";
+import { formatDate } from "@/lib/utils";
 
 interface Props {
   event: Event;
@@ -37,7 +38,7 @@ const EventCard = ({ event }: Props) => {
         />
         {/* Date Badge Overlay */}
         <div className="absolute top-3 left-3 bg-emerald-500/90 text-zinc-950 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">
-          {event.date}
+          {formatDate(event.date)}
         </div>
       </div>
 
