@@ -1,17 +1,26 @@
+import Event, { IEvent } from "@/database/event.model";
+import dbConnect from "@/lib/mongodb";
+import { cacheLife } from "next/cache";
 import EventCard from "@/components/EventCard";
 import ExploreBtn from "@/components/ExploreBtn";
 import FeaturedEventsTracker from "@/components/FeaturedEventsTracker";
-import { IEvent } from "@/database/event.model";
-import { cacheLife } from "next/cache";
 
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
-const Page = async () => {
+// Helper function to query events directly from MongoDB, cached
+const getEvents = async () => {
   'use cache';
   cacheLife('hours');
-  const response = await fetch(`${BASE_URL}/api/events`);
-  const { events } = await response.json();
+  try {
+    await dbConnect();
+    const eventsDoc = await Event.find().sort({ createdAt: -1 });
+    return JSON.parse(JSON.stringify(eventsDoc));
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return [];
+  }
+};
+
+const Page = async () => {
+  const events = await getEvents();
 
   return (
     <section className="flex flex-col px-4 py-12 container mx-auto max-w-7xl lg:px-10">

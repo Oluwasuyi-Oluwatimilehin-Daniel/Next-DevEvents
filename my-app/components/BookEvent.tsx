@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { Loader2, CheckCircle2, AlertCircle, ShieldCheck } from "lucide-react";
+import { createBooking } from "@/lib/actions/booking.actions";
+import posthog from "posthog-js";
 
 interface BookEventProps {
+  eventId: string;
   slug: string;
   initialBookingsCount: number;
 }
 
-const BookEvent = ({ slug, initialBookingsCount }: BookEventProps) => {
+const BookEvent = ({ eventId, slug, initialBookingsCount }: BookEventProps) => {
   const [email, setEmail] = useState("");
   const [bookingsCount, setBookingsCount] = useState(initialBookingsCount);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,24 +24,24 @@ const BookEvent = ({ slug, initialBookingsCount }: BookEventProps) => {
     setErrorMsg("");
 
     try {
-      const response = await fetch(`/api/events/${slug}/book`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      // 1. Create the booking using the type-safe Server Action
+      const result = await createBooking({ eventId, slug, email });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong.");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to book your spot.");
       }
 
       setSubmitted(true);
       setBookingsCount((prev) => prev + 1);
+
+      // 2. Track successful booking in analytics
+      posthog.capture("event_booked", { eventId, slug, email });
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to book your spot.");
+      const errMsg = err instanceof Error ? err.message : "Failed to book your spot.";
+      setErrorMsg(errMsg);
+
+      // 3. Track any exceptions in analytics
+      posthog.captureException(err);
     } finally {
       setIsLoading(false);
     }
