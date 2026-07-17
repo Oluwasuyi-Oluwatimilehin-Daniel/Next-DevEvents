@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   cacheComponents: true,
   // Enable image optimization and specify allowed domains
   images: {

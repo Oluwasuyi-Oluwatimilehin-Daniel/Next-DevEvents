@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IEvent } from "@/database/event.model";
+import Event from "@/database/event.model";
+import Bookings from "@/database/booking.model";
+import dbConnect from "@/lib/mongodb";
 import BookEvent from "@/components/BookEvent";
 import {
   Calendar,
@@ -13,10 +16,11 @@ import {
   BookOpen,
 } from "lucide-react";
 
-import { ElementType } from "react";
+import { ElementType, Suspense } from "react";
 import { formatDate } from "@/lib/utils";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
 import EventCard from "@/components/EventCard";
+import { cacheLife } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -75,22 +79,43 @@ const EventTags = ({ tags }: { tags: string[] }) => (
   </div>
 );
 
-const EventDetailsPage = async ({
+// Helper function to fetch event details by slug, cached per slug
+const getEventDetails = async (slug: string) => {
+  'use cache';
+  cacheLife('hours');
+  try {
+    await dbConnect();
+    const eventDoc = await Event.findOne({ slug: slug.trim() });
+    if (!eventDoc) return null;
+
+    const bookingsCount = await Bookings.countDocuments({ eventId: eventDoc._id });
+    
+    // Serialize documents safely for client rendering
+    return {
+      event: JSON.parse(JSON.stringify(eventDoc)),
+      bookingsCount
+    };
+  } catch (error) {
+    console.error("Error in getEventDetails:", error);
+    return null;
+  }
+};
+
+const EventDetailsContent = async ({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
+  const data = await getEventDetails(slug);
+  if (!data || !data.event) return notFound();
 
-  const request = await fetch(`${BASE_URL}/api/events/${slug}`);
   const {
     event,
     bookingsCount = 0,
-  }: { event: IEvent; bookingsCount?: number } = await request.json();
+  }: { event: IEvent & { _id: string }; bookingsCount?: number } = data;
 
-  if (!event) return notFound();
-
-  const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug)
+  const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
   return (
     <section className="container mx-auto px-4 py-8 lg:px-10 max-w-7xl animate-in fade-in duration-500">
@@ -199,7 +224,7 @@ const EventDetailsPage = async ({
         {/* Right sidebar - booking widget */}
         <div className="lg:col-span-1">
           <aside className="sticky top-14 bg-zinc-900/60 border border-white/10 p-6 shadow-2xl shadow-emerald-500/5 backdrop-blur-md rounded-2xl">
-            <BookEvent slug={slug} initialBookingsCount={bookingsCount} />
+            <BookEvent eventId={event._id} slug={slug} initialBookingsCount={bookingsCount} />
           </aside>
         </div>
       </div>
@@ -252,6 +277,22 @@ const EventDetailsPage = async ({
         </div> */}
       </div>
     </section>
+  );
+};
+
+const EventDetailsPage = ({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) => {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-emerald-500"></div>
+      </div>
+    }>
+      <EventDetailsContent params={params} />
+    </Suspense>
   );
 };
 
