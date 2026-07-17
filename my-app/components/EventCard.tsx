@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
 import type { Event } from "@/lib/constants";
+import { formatDate } from "@/lib/utils";
 
 interface Props {
   event: Event;
@@ -22,7 +23,7 @@ const EventCard = ({ event }: Props) => {
   return (
     <Link
       className="group block relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/40 backdrop-blur-md p-4 transition-all duration-300 hover:border-emerald-500/30 hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-emerald-500/5"
-      href={`/event/${event.slug}`}
+      href={`/events/${event.slug}`}
       onClick={handleClick}
     >
       {/* Event Image Container */}
@@ -37,7 +38,7 @@ const EventCard = ({ event }: Props) => {
         />
         {/* Date Badge Overlay */}
         <div className="absolute top-3 left-3 bg-emerald-500/90 text-zinc-950 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">
-          {event.date}
+          {formatDate(event.date)}
         </div>
       </div>
 

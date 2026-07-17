@@ -1,6 +1,7 @@
 "use client";
 
 import posthog from "posthog-js";
+import { ArrowDown } from "lucide-react";
 
 const ExploreBtn = () => {
   const handleClick = () => {
@@ -13,11 +14,12 @@ const ExploreBtn = () => {
   return (
     <a
       href="#event"
-      className="mx-auto mt-7 border border-gray-500 bg-gray-600/30 text-white rounded-full px-10 py-2 cursor-pointer hover:bg-gray-500/50 transition-colors"
+      className="flex items-center mx-auto mt-7 border px-10 py-3 border-gray-500 transition-colors duration-200 bg-gray-600/30 text-white rounded-full cursor-pointer hover:bg-gray-500/50 "
       id="explore-btn"
       onClick={handleClick}
     >
-      Explore Events
+      <p>Explore Events</p>
+      <ArrowDown className="w-5 h-5 ml-2" />
     </a>
   );
 };
