@@ -56,7 +56,7 @@ const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => (
       {agendaItems.map((item, index) => (
         <div key={item} className="relative">
           {/* Timeline Dot with number */}
-          <span className="absolute left-[-32px] top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-950 border border-emerald-500/60 text-[10px] text-emerald-400 font-mono font-bold">
+          <span className="absolute -left-8 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-950 border border-emerald-500/60 text-[10px] text-emerald-400 font-mono font-bold">
             {index + 1}
           </span>
           <p className="text-sm font-medium text-zinc-200">{item}</p>
@@ -147,7 +147,7 @@ const EventDetailsContent = async ({
         {/* Left main info */}
         <div className="lg:col-span-2 space-y-8">
           {/* Banner Hero Image */}
-          <div className="relative w-full aspect-video md:h-[400px] overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl">
+          <div className="relative w-full aspect-video md:h-100 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl">
             <Image
               src={event.image}
               alt={event.title}
@@ -259,7 +259,7 @@ const EventDetailsPage = ({
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-100">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-emerald-500"></div>
         </div>
       }
