@@ -5,13 +5,22 @@ import EventCard from "@/components/EventCard";
 import ExploreBtn from "@/components/ExploreBtn";
 import FeaturedEventsTracker from "@/components/FeaturedEventsTracker";
 
-// Helper function to query events directly from MongoDB, cached
+/**
+ * Helper function to fetch all events from MongoDB.
+ * Uses Next.js caching directives ('use cache' and cacheLife).
+ * Queries events sorted by { createdAt: -1 } so newest events are returned first.
+ */
 const getEvents = async () => {
   'use cache';
   cacheLife('hours');
   try {
+    // Connect to MongoDB database
     await dbConnect();
+
+    // Fetch events sorted by creation date descending (newest first)
     const eventsDoc = await Event.find().sort({ createdAt: -1 });
+
+    // Serialize Mongoose documents into plain JS objects for React rendering
     return JSON.parse(JSON.stringify(eventsDoc));
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -19,7 +28,12 @@ const getEvents = async () => {
   }
 };
 
+/**
+ * Main Home Page Component
+ * Renders hero header, featured tracker, and grid of event cards.
+ */
 const Page = async () => {
+  // Fetch real-time events list sorted newest-first
   const events = await getEvents();
 
   return (

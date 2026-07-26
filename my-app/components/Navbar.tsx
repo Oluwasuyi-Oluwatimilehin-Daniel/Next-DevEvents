@@ -4,15 +4,11 @@ import Link from "next/link";
 import posthog from "posthog-js";
 import { useState } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
+import { Calendar, Plus } from "lucide-react";
 
 const navItems = [
   { label: "Home", href: "/", target: "home" },
-  { label: "Events", href: "#event", target: "events" },
-  {
-    label: "Create Event",
-    href: "/create-events",
-    target: "create_event",
-  },
+  { label: "Explore Events", href: "/#event", target: "events" },
 ] as const;
 
 const Navbar = () => {
@@ -28,49 +24,65 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-800/70 bg-zinc-950/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950/80 backdrop-blur-md shadow-lg shadow-black/20">
       <nav className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 lg:px-8">
+        {/* Brand Logo */}
         <Link
-          className="text-lg font-semibold tracking-tight text-zinc-100 transition-colors hover:text-emerald-400"
+          className="group inline-flex items-center gap-2.5 text-lg font-bold tracking-tight text-white transition-opacity hover:opacity-90"
           href="/"
           onClick={() => handleNavClick("logo", "/")}
         >
-          DevEvents
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-zinc-950 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-200">
+            <Calendar className="h-4 w-4 stroke-[2.5]" />
+          </div>
+          <span>
+            Dev<span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Events</span>
+          </span>
         </Link>
 
-        {/* Desktop view */}
-        <ul className="hidden items-center space-x-3 md:flex lg:space-x-7">
-          {navItems.map((item) => (
-            <li
-              key={item.label}
-              className="text-sm text-zinc-300 transition-colors hover:text-emerald-400"
-            >
-              <Link
-                href={item.href}
-                onClick={() => handleNavClick(item.target, item.href)}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {/* Desktop Links */}
+        <div className="hidden items-center gap-8 md:flex">
+          <ul className="flex items-center space-x-6">
+            {navItems.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  onClick={() => handleNavClick(item.target, item.href)}
+                  className="text-sm font-medium text-zinc-300 transition-colors hover:text-emerald-400"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {/* Create Event CTA Button */}
+          <Link
+            href="/create-events"
+            onClick={() => handleNavClick("create_event", "/create-events")}
+            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-400 border border-emerald-500/30 transition-all duration-200 hover:bg-emerald-500/20 hover:border-emerald-400/60 hover:shadow-md hover:shadow-emerald-500/10 active:scale-95"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Create Event</span>
+          </Link>
+        </div>
 
         {/* Mobile menu button */}
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 border border-white/10 text-zinc-100 transition hover:border-emerald-400/40 hover:bg-emerald-500/10 md:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-zinc-100 transition hover:border-emerald-400/40 hover:bg-emerald-500/10 md:hidden"
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label="Toggle menu"
         >
           {isOpen ? <LuX size={18} /> : <LuMenu size={18} />}
         </button>
 
-        {/* Mobile view */}
+        {/* Mobile View Dropdown */}
         <div
-          className={`absolute left-0 top-full w-full overflow-hidden border-b border-zinc-800/70 bg-zinc-950/95 backdrop-blur-xl transition-all duration-300 md:hidden ${
-            isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+          className={`absolute left-0 top-full w-full overflow-hidden border-b border-white/10 bg-zinc-950/95 backdrop-blur-xl transition-all duration-300 md:hidden ${
+            isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <ul className="flex flex-col space-y-3 px-4 py-4">
+          <ul className="flex flex-col space-y-2 px-4 py-4">
             {navItems.map((item) => (
               <li key={item.label}>
                 <Link
@@ -82,6 +94,16 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
+            <li className="pt-2 border-t border-white/5">
+              <Link
+                href="/create-events"
+                onClick={() => handleNavClick("create_event", "/create-events")}
+                className="flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Create Event</span>
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>
