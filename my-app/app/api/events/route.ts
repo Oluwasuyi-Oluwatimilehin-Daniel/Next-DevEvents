@@ -37,45 +37,91 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Step 3: Retrieve the image file from either 'file' or 'image' field
+    // Step 3: Extract image payload (either uploaded File or direct Image URL)
+    let imageUrl: string | null = null;
+
     let file = formData.get("file") as File | null;
-    if (!file || (file instanceof File && file.size === 0)) {
+    if (!file || !(file instanceof File) || file.size === 0) {
       const imageField = formData.get("image");
       if (imageField && imageField instanceof File && imageField.size > 0) {
         file = imageField;
+      } else {
+        file = null;
       }
     }
 
-    // Validate that an image file was provided
-    if (!file || (file instanceof File && file.size === 0)) {
+/**
+ * Helper to resolve Unsplash webpage URLs (e.g. https://unsplash.com/photos/...)
+ * into direct image CDN URLs (https://images.unsplash.com/photo-...).
+ */
+const resolveDirectImageUrl = async (rawUrl: string): Promise<string> => {
+  let url = rawUrl.trim();
+
+  if (url.includes("unsplash.com/photos/")) {
+    try {
+      const cleanUrl = url.split("?")[0];
+      const parts = cleanUrl.split("/").filter(Boolean);
+      const slug = parts[parts.length - 1];
+
+      let photoId = slug;
+      if (slug.includes("-")) {
+        const subParts = slug.split("-");
+        photoId = subParts[subParts.length - 1];
+      }
+
+      if (photoId) {
+        const downloadUrl = `https://unsplash.com/photos/${photoId}/download?w=1200`;
+        const res = await fetch(downloadUrl, { method: "HEAD" });
+        if (res.ok && res.url && res.url.includes("images.unsplash.com")) {
+          return res.url;
+        }
+      }
+    } catch (err) {
+      console.warn("[resolveDirectImageUrl] Unsplash resolution failed:", err);
+    }
+  }
+
+  return url;
+};
+
+    if (file && file instanceof File && file.size > 0) {
+      // Option A: Upload local image file to Cloudinary storage
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            { resource_type: "image", folder: "Next-DevEvents" },
+            (error, results) => {
+              if (error) reject(error);
+              resolve(results);
+            },
+          )
+          .end(buffer);
+      });
+
+      imageUrl = (uploadResult as { secure_url: string }).secure_url;
+    } else {
+      // Option B: Use provided Image URL string (e.g., Unsplash)
+      const rawUrl = formData.get("imageUrl") || formData.get("image");
+      if (typeof rawUrl === "string" && rawUrl.trim() !== "") {
+        imageUrl = await resolveDirectImageUrl(rawUrl.trim());
+      }
+    }
+
+    // Validate that a valid image URL or file was resolved
+    if (!imageUrl) {
       return NextResponse.json(
-        { message: "Image File is required" },
+        { message: "Please upload an image file or enter a valid image URL." },
         { status: 400 },
       );
     }
 
-    // Convert file to Buffer for Cloudinary upload stream
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    // Upload image to Cloudinary folder "Next-DevEvents"
-    const uploadResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          { resource_type: "image", folder: "Next-DevEvents" },
-          (error, results) => {
-            if (error) reject(error);
-            resolve(results);
-          },
-        )
-        .end(buffer);
-    });
-
-    // Replace the file object with the secure URL string returned from Cloudinary
-    event.image = (uploadResult as { secure_url: string }).secure_url;
-
-    // Clean up temporary file key before saving to database
+    // Assign the resolved image URL to event payload
+    event.image = imageUrl;
     delete event.file;
+    delete event.imageUrl;
 
     // Step 4: Normalize and parse 'agenda' (comma-separated string -> string array)
     const rawAgenda = event.agenda;
@@ -108,7 +154,7 @@ export async function POST(req: NextRequest) {
     // Step 6: Create and save new Event document in MongoDB database
     const createdEvent = await Event.create(event);
 
-    // Step 7: Purge Next.js cache for the home page ('/') so the new event shows up immediately at the top
+    // Step 7: Purge Next.js server cache for the home page ('/') so the new event is fetched immediately
     revalidatePath("/");
 
     return NextResponse.json(
