@@ -99,7 +99,7 @@ const BookEvent = ({ eventId, slug, initialBookingsCount }: BookEventProps) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-600 disabled:opacity-80 text-zinc-950 font-semibold text-sm rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-linear-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 disabled:opacity-70 text-zinc-950 font-bold text-sm rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/20 active:scale-[0.99] cursor-pointer disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

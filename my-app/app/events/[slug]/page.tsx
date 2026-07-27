@@ -56,7 +56,7 @@ const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => (
       {agendaItems.map((item, index) => (
         <div key={item} className="relative">
           {/* Timeline Dot with number */}
-          <span className="absolute left-[-32px] top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-950 border border-emerald-500/60 text-[10px] text-emerald-400 font-mono font-bold">
+          <span className="absolute -left-8 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-950 border border-emerald-500/60 text-[10px] text-emerald-400 font-mono font-bold">
             {index + 1}
           </span>
           <p className="text-sm font-medium text-zinc-200">{item}</p>
@@ -81,19 +81,21 @@ const EventTags = ({ tags }: { tags: string[] }) => (
 
 // Helper function to fetch event details by slug, cached per slug
 const getEventDetails = async (slug: string) => {
-  'use cache';
-  cacheLife('hours');
+  "use cache";
+  cacheLife("hours");
   try {
     await dbConnect();
     const eventDoc = await Event.findOne({ slug: slug.trim() });
     if (!eventDoc) return null;
 
-    const bookingsCount = await Bookings.countDocuments({ eventId: eventDoc._id });
-    
+    const bookingsCount = await Bookings.countDocuments({
+      eventId: eventDoc._id,
+    });
+
     // Serialize documents safely for client rendering
     return {
       event: JSON.parse(JSON.stringify(eventDoc)),
-      bookingsCount
+      bookingsCount,
     };
   } catch (error) {
     console.error("Error in getEventDetails:", error);
@@ -145,7 +147,7 @@ const EventDetailsContent = async ({
         {/* Left main info */}
         <div className="lg:col-span-2 space-y-8">
           {/* Banner Hero Image */}
-          <div className="relative w-full aspect-video md:h-[400px] overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl">
+          <div className="relative w-full aspect-video md:h-100 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl">
             <Image
               src={event.image}
               alt={event.title}
@@ -224,57 +226,26 @@ const EventDetailsContent = async ({
         {/* Right sidebar - booking widget */}
         <div className="lg:col-span-1">
           <aside className="sticky top-14 bg-zinc-900/60 border border-white/10 p-6 shadow-2xl shadow-emerald-500/5 backdrop-blur-md rounded-2xl">
-            <BookEvent eventId={event._id} slug={slug} initialBookingsCount={bookingsCount} />
+            <BookEvent
+              eventId={event._id}
+              slug={slug}
+              initialBookingsCount={bookingsCount}
+            />
           </aside>
         </div>
       </div>
 
       <div className="w-full flex flex-col gap-4 pt-20">
-        <h2 className="text-2xl font-bold text-zinc-100">
-          Similar Events
-        </h2>
+        <h2 className="text-2xl font-bold text-zinc-100">Similar Events</h2>
         <p className="text-zinc-400 text-sm">
           Browse through other similar events that might interest you
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {similarEvents.length > 0 && similarEvents.map((similarEvent: IEvent) => (
-            <EventCard key={similarEvent.slug} event={similarEvent} />
-          ))}
+          {similarEvents.length > 0 &&
+            similarEvents.map((similarEvent: IEvent) => (
+              <EventCard key={similarEvent.slug} event={similarEvent} />
+            ))}
         </div>
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {similarEvents.map((similarEvent) => (
-            <Link
-              key={similarEvent._id}
-              href={`/events/${similarEvent.slug}`}
-              className="group relative bg-zinc-900/40 border border-white/5 backdrop-blur-md p-4 rounded-2xl hover:border-emerald-500/20 transition-all duration-200 hover:-translate-y-1"
-            >
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-4 group-hover:scale-105 transition-transform duration-200">
-                <Image
-                  src={similarEvent.image}
-                  alt={similarEvent.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 800px"
-                />
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-bold text-zinc-200 group-hover:text-emerald-400 transition-colors duration-200">
-                  {similarEvent.title}
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-zinc-400">
-                  <Calendar className="w-4 h-4" />
-                  <span>{formatDate(similarEvent.date)}</span>
-                  <Clock className="w-4 h-4" />
-                  <span>{similarEvent.time}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-zinc-400">
-                  <MapPin className="w-4 h-4" />
-                  <span>{similarEvent.location}</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div> */}
       </div>
     </section>
   );
@@ -286,11 +257,13 @@ const EventDetailsPage = ({
   params: Promise<{ slug: string }>;
 }) => {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-emerald-500"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-100">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-emerald-500"></div>
+        </div>
+      }
+    >
       <EventDetailsContent params={params} />
     </Suspense>
   );
