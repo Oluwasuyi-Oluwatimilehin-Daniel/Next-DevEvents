@@ -2,13 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  Upload,
+  Link as LinkIcon,
+} from "lucide-react";
 
 type EventFormState = {
   title: string;
   description: string;
   overview: string;
+  imageMode: "file" | "url";
   image: File | null;
+  imageUrl: string;
   venue: string;
   location: string;
   date: string;
@@ -24,7 +32,9 @@ const initialFormState: EventFormState = {
   title: "",
   description: "",
   overview: "",
+  imageMode: "file",
   image: null,
+  imageUrl: "",
   venue: "",
   location: "",
   date: "",
@@ -68,20 +78,40 @@ const CreateEventForm = () => {
     setIsSubmitting(true);
     setMessage(null);
 
-    // Validate image file upload before submitting
-    if (!form.image) {
-      setMessage({ type: "error", text: "Please upload an event image." });
+    // Validate image input based on selected tab mode
+    if (form.imageMode === "file" && !form.image) {
+      setMessage({ type: "error", text: "Please upload an event image file." });
       setIsSubmitting(false);
       return;
     }
 
-    // Construct FormData object to transfer text fields and image file payload
+    if (form.imageMode === "url" && !form.imageUrl.trim()) {
+      setMessage({ type: "error", text: "Please enter a valid image URL." });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Construct FormData object to transfer text fields and image file/url payload
     const formData = new FormData();
 
     Object.entries(form).forEach(([key, value]) => {
-      if (value instanceof File) {
+      if (
+        key === "image" &&
+        value instanceof File &&
+        form.imageMode === "file"
+      ) {
         formData.append("image", value);
-      } else if (typeof value === "string" && value.trim()) {
+      } else if (
+        key === "imageUrl" &&
+        typeof value === "string" &&
+        form.imageMode === "url"
+      ) {
+        formData.append("imageUrl", value.trim());
+      } else if (
+        typeof value === "string" &&
+        value.trim() &&
+        key !== "imageUrl"
+      ) {
         formData.append(key, value);
       }
     });
@@ -214,19 +244,70 @@ const CreateEventForm = () => {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-300" htmlFor="image">
-            Event Image
-          </label>
-          <input
-            id="image"
-            name="image"
-            type="file"
-            accept="image/*"
-            required
-            onChange={handleChange}
-            className="w-full rounded-xl border border-dashed border-white/10 py-3 bg-zinc-950/60 px-4 text-sm text-zinc-300 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-500/15 file:px-3 file:py-2 file:text-sm file:font-medium file:text-emerald-400"
-          />
+        {/* Dual Mode Image Selector (Device Upload or Web URL) */}
+        <div className="space-y-2 md:col-span-2">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-zinc-300">
+              Event Image
+            </label>
+            {/* Mode Toggle Tabs */}
+            <div className="inline-flex rounded-lg bg-zinc-950/80 p-1 border border-white/10">
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((prev) => ({ ...prev, imageMode: "file" }))
+                }
+                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
+                  form.imageMode === "file"
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span>Upload Device File</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((prev) => ({ ...prev, imageMode: "url" }))
+                }
+                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
+                  form.imageMode === "url"
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <LinkIcon className="h-3.5 w-3.5" />
+                <span>Image Web URL</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Conditional Input Rendering based on selected tab */}
+          {form.imageMode === "file" ? (
+            <input
+              key="file-input-field"
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              required={!form.imageUrl}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-dashed border-white/10 py-3 bg-zinc-950/60 px-4 text-sm text-zinc-300 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-500/15 file:px-3 file:py-2 file:text-sm file:font-medium file:text-emerald-400 cursor-pointer"
+            />
+          ) : (
+            <input
+              key="url-input-field"
+              id="imageUrl"
+              name="imageUrl"
+              type="url"
+              required={!form.image}
+              value={form.imageUrl || ""}
+              onChange={handleChange}
+              className={inputClassName}
+              placeholder="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200"
+            />
+          )}
         </div>
 
         <div className="space-y-2">

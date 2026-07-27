@@ -4,16 +4,16 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   cacheComponents: true,
-  // Enable image optimization and specify allowed domains
+  // Enable image optimization for external images (Cloudinary, Unsplash, Pexels, etc.)
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "res.cloudinary.com",
+        hostname: "**",
       },
       {
-        protocol: "https",
-        hostname: "images.unsplash.com",
+        protocol: "http",
+        hostname: "**",
       },
     ],
   },

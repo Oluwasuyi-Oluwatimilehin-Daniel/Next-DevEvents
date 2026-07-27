@@ -1,17 +1,19 @@
 'use server';
 
+import mongoose from "mongoose";
 import Booking from "@/database/booking.model";
 import Event from "@/database/event.model";
 import dbConnect from "../mongodb";
 import { sendBookingConfirmationEmail } from "../email";
 import { formatDate } from "../utils";
+import { revalidatePath } from "next/cache";
 
 export const createBooking = async ({
   eventId,
   slug,
   email,
 }: {
-  eventId: string;
+  eventId?: string;
   slug?: string;
   email: string;
 }) => {
@@ -20,9 +22,26 @@ export const createBooking = async ({
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // 1. Check if the user has already booked a spot for this event
+    // 1. Find the target Event document by ID or slug first
+    let event = null;
+    if (eventId && mongoose.Types.ObjectId.isValid(eventId)) {
+      event = await Event.findById(eventId);
+    }
+    
+    if (!event && slug) {
+      event = await Event.findOne({ slug: slug.trim() });
+    }
+
+    if (!event) {
+      return {
+        success: false,
+        error: "Target event not found.",
+      };
+    }
+
+    // 2. Check if this email address has ALREADY booked a spot for THIS SPECIFIC event
     const existingBooking = await Booking.findOne({
-      eventId,
+      eventId: event._id,
       email: normalizedEmail,
     });
 
@@ -33,33 +52,29 @@ export const createBooking = async ({
       };
     }
 
-    // 2. Query event details to send personalized email notification
-    let event = null;
-    if (eventId) {
-      event = await Event.findById(eventId);
-    } else if (slug) {
-      event = await Event.findOne({ slug });
-    }
-
-    // 3. Save the new booking in MongoDB
+    // 3. Save the new booking in MongoDB bound to event._id
     const bookingDoc = await Booking.create({
-      eventId,
+      eventId: event._id,
       email: normalizedEmail,
     });
 
     // 4. Send email notification to the entered email address
-    if (event) {
-      await sendBookingConfirmationEmail({
-        to: normalizedEmail,
-        eventTitle: event.title,
-        eventDate: formatDate(event.date),
-        eventTime: event.time,
-        eventLocation: event.location,
-        eventVenue: event.venue,
-      });
+    await sendBookingConfirmationEmail({
+      to: normalizedEmail,
+      eventTitle: event.title,
+      eventDate: formatDate(event.date),
+      eventTime: event.time,
+      eventLocation: event.location,
+      eventVenue: event.venue,
+    });
+
+    // 5. Revalidate cache for home page and event detail page
+    revalidatePath("/");
+    if (event.slug) {
+      revalidatePath(`/events/${event.slug}`);
     }
 
-    // 5. Serialize mongoose document safely for Next.js Client/Server Components
+    // 6. Serialize mongoose document safely for Next.js Client/Server Components
     const booking = JSON.parse(JSON.stringify(bookingDoc));
 
     return { success: true, booking };
