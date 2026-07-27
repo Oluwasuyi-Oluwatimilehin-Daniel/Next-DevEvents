@@ -37,7 +37,7 @@ const initialFormState: EventFormState = {
 };
 
 const inputClassName =
-  "w-full rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
+  "w-full rounded-xl border border-white/10 bg-zinc-950/80 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500/80 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all duration-200";
 
 const CreateEventForm = () => {
   const router = useRouter(); // Next.js router instance for client-side navigation
@@ -364,15 +364,15 @@ const CreateEventForm = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-80"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-zinc-950 px-8 py-3.5 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all duration-200 active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Creating event...
+            <Loader2 className="h-4 w-4 animate-spin text-zinc-950" />
+            <span>Publishing Event...</span>
           </>
         ) : (
-          "Create Event"
+          <span>Publish Event Now</span>
         )}
       </button>
     </form>

@@ -32,11 +32,11 @@ const Navbar = () => {
           href="/"
           onClick={() => handleNavClick("logo", "/")}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-zinc-950 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-200">
-            <Calendar className="h-4 w-4 stroke-[2.5]" />
-          </div>
           <span>
-            Dev<span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Events</span>
+            Dev
+            <span className="bg-linear-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+              Events
+            </span>
           </span>
         </Link>
 
@@ -60,10 +60,9 @@ const Navbar = () => {
           <Link
             href="/create-events"
             onClick={() => handleNavClick("create_event", "/create-events")}
-            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-400 border border-emerald-500/30 transition-all duration-200 hover:bg-emerald-500/20 hover:border-emerald-400/60 hover:shadow-md hover:shadow-emerald-500/10 active:scale-95"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs rounded-full bg-emerald-500/10  font-semibold text-emerald-400 border border-emerald-500/30 transition-all duration-200 hover:bg-emerald-500/20 hover:border-emerald-400/60 hover:shadow-md hover:shadow-emerald-500/10 active:scale-95"
           >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Create Event</span>
+            Create Event
           </Link>
         </div>
 
@@ -98,10 +97,9 @@ const Navbar = () => {
               <Link
                 href="/create-events"
                 onClick={() => handleNavClick("create_event", "/create-events")}
-                className="flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
+                className="flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
               >
-                <Plus className="h-4 w-4" />
-                <span>Create Event</span>
+                Create Event
               </Link>
             </li>
           </ul>

@@ -1,8 +1,10 @@
 'use server';
 
 import Booking from "@/database/booking.model";
-
+import Event from "@/database/event.model";
 import dbConnect from "../mongodb";
+import { sendBookingConfirmationEmail } from "../email";
+import { formatDate } from "../utils";
 
 export const createBooking = async ({
   eventId,
@@ -31,13 +33,33 @@ export const createBooking = async ({
       };
     }
 
-    // 2. Save the new booking
+    // 2. Query event details to send personalized email notification
+    let event = null;
+    if (eventId) {
+      event = await Event.findById(eventId);
+    } else if (slug) {
+      event = await Event.findOne({ slug });
+    }
+
+    // 3. Save the new booking in MongoDB
     const bookingDoc = await Booking.create({
       eventId,
       email: normalizedEmail,
     });
 
-    // 3. Serialize mongoose document safely for Next.js Client/Server Components
+    // 4. Send email notification to the entered email address
+    if (event) {
+      await sendBookingConfirmationEmail({
+        to: normalizedEmail,
+        eventTitle: event.title,
+        eventDate: formatDate(event.date),
+        eventTime: event.time,
+        eventLocation: event.location,
+        eventVenue: event.venue,
+      });
+    }
+
+    // 5. Serialize mongoose document safely for Next.js Client/Server Components
     const booking = JSON.parse(JSON.stringify(bookingDoc));
 
     return { success: true, booking };
