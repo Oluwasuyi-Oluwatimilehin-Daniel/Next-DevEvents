@@ -108,10 +108,9 @@ const CreateEventForm = () => {
       });
       setForm(initialFormState);
 
-      // Redirect user to home page after 1 second to view the new event at top of list
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
+      // Redirect user to home page and force router refresh to display the newly revalidated event immediately
+      router.push("/");
+      router.refresh();
     } catch (error) {
       const errMsg =
         error instanceof Error ? error.message : "Something went wrong.";

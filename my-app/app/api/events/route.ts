@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
     // Step 6: Create and save new Event document in MongoDB database
     const createdEvent = await Event.create(event);
 
-    // Step 7: Purge Next.js cache for the home page ('/') so the new event shows up immediately at the top
+    // Step 7: Purge Next.js server cache for the home page ('/') so the new event is fetched immediately
     revalidatePath("/");
 
     return NextResponse.json(

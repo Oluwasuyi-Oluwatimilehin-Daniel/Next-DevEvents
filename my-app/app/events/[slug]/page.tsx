@@ -20,6 +20,7 @@ import { ElementType, Suspense } from "react";
 import { formatDate } from "@/lib/utils";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
 import EventCard from "@/components/EventCard";
+import DeleteEventButton from "@/components/DeleteEventButton";
 import { cacheLife } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -223,14 +224,27 @@ const EventDetailsContent = async ({
           )}
         </div>
 
-        {/* Right sidebar - booking widget */}
+        {/* Right sidebar - booking widget and host actions */}
         <div className="lg:col-span-1">
-          <aside className="sticky top-14 bg-zinc-900/60 border border-white/10 p-6 shadow-2xl shadow-emerald-500/5 backdrop-blur-md rounded-2xl">
-            <BookEvent
-              eventId={event._id}
-              slug={slug}
-              initialBookingsCount={bookingsCount}
-            />
+          <aside className="sticky top-14 space-y-4">
+            <div className="bg-zinc-900/60 border border-white/10 p-6 shadow-2xl shadow-emerald-500/5 backdrop-blur-md rounded-2xl">
+              <BookEvent
+                eventId={event._id}
+                slug={slug}
+                initialBookingsCount={bookingsCount}
+              />
+            </div>
+
+            {/* Host Controls Section */}
+            <div className="bg-zinc-900/40 border border-white/5 p-4 backdrop-blur-md rounded-2xl flex items-center justify-between">
+              <div className="space-y-0.5">
+                <p className="text-xs font-semibold text-zinc-300">
+                  Host Controls
+                </p>
+                <p className="text-[11px] text-zinc-500">Manage this listing</p>
+              </div>
+              <DeleteEventButton slug={slug} eventTitle={event.title} />
+            </div>
           </aside>
         </div>
       </div>

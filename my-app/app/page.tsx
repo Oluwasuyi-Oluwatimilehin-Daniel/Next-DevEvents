@@ -8,7 +8,7 @@ import { Sparkles, CalendarDays } from "lucide-react";
 
 /**
  * Helper function to fetch all events from MongoDB.
- * Uses Next.js caching directives ('use cache' and cacheLife).
+ * Uses Next.js caching directives ('use cache', cacheLife, cacheTag).
  * Queries events sorted by { createdAt: -1 } so newest events are returned first.
  */
 const getEvents = async () => {
