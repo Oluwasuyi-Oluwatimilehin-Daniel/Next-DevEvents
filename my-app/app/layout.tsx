@@ -11,8 +11,13 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "DevEvents",
-  description: "The Hub for Tech Events",
+  title: "DevEvents — The Hub for Every Dev Event",
+  description: "Discover, publish, and attend hackathons, tech meetups, and developer conferences worldwide.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({

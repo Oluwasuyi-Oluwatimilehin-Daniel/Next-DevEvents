@@ -68,7 +68,7 @@ const Navbar = () => {
 
         {/* Mobile menu button */}
         <button
-          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-zinc-100 transition hover:border-emerald-400/40 hover:bg-emerald-500/10 md:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-zinc-100 transition hover:border-emerald-400/40 hover:bg-emerald-500/10 md:hidden"
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label="Toggle menu"
         >
